@@ -48,3 +48,14 @@ Thumbs.db
 # Markdown documentation: keep only README.md tracked
 *.md
 !/README.md
+
+# Private demo recording
+/Demo Audio.mp4
+# Local transcription environment
+.venv-transcription/
+
+# Generated pipeline artifacts
+/artifacts/
+
+# Private demo recording
+/Demo Audio.mp4
