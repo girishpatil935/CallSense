@@ -65,6 +65,26 @@ Each call includes `id`, `customer`, `title`, `date`, `duration`, `channel`, `tr
 
 The sample set is small and authored for demonstration. The lexical analyzer does not understand context, sarcasm, or speech acoustics, and no real-world evaluation dataset is provided. Replace the prototype scoring only after collecting appropriately consented, labeled data and evaluating a suitable model.
 
+## 🚀 Future Scope
+
+CallSense AI can be enhanced in several ways to improve its accuracy, scalability, and usefulness for businesses:
+
+- **Advanced Sentiment Analysis:** Integrate more sophisticated NLP models to detect neutral sentiment, emotions such as frustration and satisfaction, and changes in customer sentiment throughout a conversation.
+- **Improved Purchase Intent Prediction:** Develop a machine learning model trained on labeled customer interaction data to estimate purchase likelihood more reliably, moving beyond rule-based or sentiment-driven heuristics.
+- **Real-Time Call Analysis:** Enable live transcription and sentiment analysis during customer calls, allowing agents to respond to customer concerns as they arise.
+- **Speaker Diarization:** Identify and distinguish between speakers, such as customers and sales representatives, to provide speaker-specific insights and evaluate conversation quality.
+- **Enhanced Customer Insights:** Extract key topics, frequently asked questions, objections, customer pain points, and buying signals to help businesses make data-driven decisions.
+- **CRM Integration:** Integrate with Customer Relationship Management (CRM) platforms to connect call insights with customer profiles, sales pipelines, and follow-up activities.
+- **Analytics Dashboard:** Introduce interactive visualizations, historical call comparisons, sentiment trends, conversion indicators, and team performance metrics.
+- **Multilingual Support:** Extend transcription and sentiment analysis to multiple languages to support diverse customers and regional markets.
+- **Scalability and Deployment:** Containerize the application and introduce background task processing, cloud storage, and scalable infrastructure to handle large volumes of call recordings.
+- **Privacy and Security:** Implement role-based access control, secure audio storage, configurable data-retention policies, and sensitive information redaction to protect customer data.
+- **Model Evaluation and Continuous Improvement:** Evaluate models using labeled datasets and metrics such as precision, recall, F1-score, and calibration to improve prediction reliability over time.
+
+### Long-Term Vision
+
+The long-term goal of CallSense AI is to evolve into an intelligent conversation analytics platform that transforms customer calls into actionable business insights, helping organizations improve customer satisfaction, understand buying behavior, and make better sales decisions.
+
 ## Verification
 
 Frontend checks (from `frontend/`):
