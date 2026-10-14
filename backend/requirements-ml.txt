@@ -1,0 +1,4 @@
+# Optional local transformer support. Install only if you have time and the model is already cached.
+-r requirements.txt
+transformers>=4.45,<5
+torch>=2.4

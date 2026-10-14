@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ENABLE_TRANSFORMERS: ${ENABLE_TRANSFORMERS:-false}
+      SENTIMENT_MODEL_PATH: ${SENTIMENT_MODEL_PATH:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - callsense_reports:/app/reports
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
+volumes:
+  callsense_reports:

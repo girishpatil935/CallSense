@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+backend/.venv/
+venv/
+.venv/
+
+# Node and build output
+node_modules/
+frontend/dist/
+dist/
+build/
+.vite/
+
+# Preserved local generator output; the integrated app lives in frontend/
+manus-frontend-temp/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# Generated reports, local data, uploads, databases and model weights
+backend/reports/
+backend/data/
+backend/uploads/
+backend/media/uploads/
+backend/media/private/
+backend/models/
+models/
+*.db
+*.sqlite
+*.sqlite3
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Markdown documentation: keep only README.md tracked
+*.md
+!/README.md
