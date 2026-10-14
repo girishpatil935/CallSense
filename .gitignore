@@ -57,5 +57,8 @@ Thumbs.db
 # Generated pipeline artifacts
 /artifacts/
 
-# Private demo recording
-/Demo Audio.mp4
+# Optional local Docker pipeline outputs and downloaded model caches
+/artifacts-docker/
+/model-cache-docker/
+/model-cache/
+/.cache/

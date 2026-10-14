@@ -27,3 +27,24 @@ test('normalizes the FastAPI call schema into the Manus dashboard model', () => 
   assert.equal(call.confidenceNote, 'Heuristic estimate.');
   assert.equal(call.isSyntheticDemo, true);
 });
+
+test('normalizes the local recording sentiment model and measured segment shares', () => {
+  const call = normalizeCall({
+    id: 'REAL-AUDIO-001', customer: 'Rahul', audio: 'Demo Audio.mp4',
+    is_synthetic_demo: false,
+    sentiment_model: 'distilbert/distilbert-base-uncased-finetuned-sst-2-english',
+    analysis: {
+      sentiment: 'Positive',
+      sentiment_scores: { Positive: 0.5238, Negative: 0.4762 },
+      sentiment_model: 'distilbert/distilbert-base-uncased-finetuned-sst-2-english',
+    },
+  });
+
+  assert.equal(call.id, 'REAL-AUDIO-001');
+  assert.equal(call.audioUrl, '/api/calls/REAL-AUDIO-001/audio');
+  assert.equal(call.sentiment, 'Positive');
+  assert.equal(call.sentimentScores.positive, 0.5238);
+  assert.equal(call.sentimentScores.negative, 0.4762);
+  assert.equal(call.modelName, 'distilbert/distilbert-base-uncased-finetuned-sst-2-english');
+  assert.equal(call.isSyntheticDemo, false);
+});

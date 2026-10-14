@@ -72,6 +72,7 @@ export function normalizeCall(record, index = 0) {
     analysisMethod: text(first(data.analysis_method, data.analysisMethod, analysis.analysis_method, analysis.analysisMethod, analysis.method)),
     confidenceNote: text(first(data.confidence_note, data.confidenceNote, analysis.confidence_note, analysis.confidenceNote)),
     modelScore: numeric(first(data.model_score, data.modelScore, analysis.model_score, analysis.confidence_score)),
+    modelName: text(first(data.sentiment_model, data.sentimentModel, analysis.sentiment_model, analysis.sentimentModel)),
     followUpRequired: followUp,
     isSyntheticDemo: boolOrNull(first(data.is_synthetic_demo, data.isSyntheticDemo, data.synthetic_demo, data.demo_data)),
     source: data,

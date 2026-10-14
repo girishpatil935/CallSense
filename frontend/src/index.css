@@ -195,6 +195,7 @@ h1, h2, h3 { font-family: 'Sora', 'DM Sans', sans-serif; }
 .customer-meta strong { display: block; color: #e6dfe8; font-size: 10.5px; font-weight: 600; transition: color .15s ease; }
 .customer-link:hover .customer-meta strong { color: var(--lavender); }
 .customer-meta small { margin-top: 3px; color: #817684; font-size: 8px; white-space: nowrap; }
+.real-audio-label { display: inline-flex; margin-top: 4px; padding: 2px 5px; border: 1px solid rgba(242,143,194,.42); border-radius: 4px; color: #f2a4cd; font-size: 7px; font-weight: 750; letter-spacing: .12em; line-height: 1.3; }
 .table-date { color: #a39aa6; font-size: 9.5px; white-space: nowrap; }
 .sentiment-badge { display: inline-flex; align-items: center; gap: 5px; width: max-content; max-width: 100%; padding: 4px 7px; border: 1px solid rgba(51,42,54,.95); border-radius: 6px; background: rgba(35,28,39,.54); color: #b4a8b6; font-size: 8.5px; font-weight: 600; white-space: nowrap; }
 .sentiment-badge i { width: 5px; height: 5px; border-radius: 50%; background: #988b9b; }

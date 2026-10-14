@@ -18,7 +18,7 @@ export default function CallTable({ calls, onSelect, onReport, reportBusyId, den
         <thead><tr><th>Customer / call</th><th>Date</th><th>Sentiment</th><th>Estimated purchase likelihood</th><th>{compact ? 'Duration' : 'Follow-up'}</th><th><span className="sr-only">Actions</span></th></tr></thead>
         <tbody>{calls.map((call) => (
           <tr key={`${call.id}-${call.sourceIndex}`}>
-            <td><button className="customer-link" onClick={() => onSelect(call)}><span className="avatar-orbit">{call.customerName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase()}</span><span className="customer-meta"><strong>{call.customerName}</strong><small>{call.id || 'ID unavailable'}{call.title ? ` · ${call.title}` : ''}</small></span></button></td>
+            <td><button className="customer-link" onClick={() => onSelect(call)}><span className="avatar-orbit">{call.customerName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase()}</span><span className="customer-meta"><strong>{call.customerName}</strong><small>{call.id || 'ID unavailable'}{call.title ? ` · ${call.title}` : ''}</small>{call.isSyntheticDemo === false && <span className="real-audio-label">REAL AUDIO</span>}</span></button></td>
             <td><span className="table-date">{formatDate(call.date)}</span></td>
             <td><SentimentBadge value={call.sentiment} /></td>
             <td><Likelihood value={call.purchaseProbability} compact /></td>

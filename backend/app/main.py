@@ -15,9 +15,15 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = ROOT.parent
 MEDIA = ROOT / "media"
 REPORTS = ROOT / "reports"
 REPORTS.mkdir(exist_ok=True)
+TRANSCRIPT_FILE = PROJECT_ROOT / "artifacts" / "transcription" / "transcript.json"
+SENTIMENT_FILE = PROJECT_ROOT / "artifacts" / "sentiment" / "sentiment.json"
+REAL_AUDIO_FILE = PROJECT_ROOT / "Demo Audio.mp4"
+REAL_AUDIO_ID = "REAL-AUDIO-001"
+REAL_REPORT_FILE = PROJECT_ROOT / "artifacts" / "reports" / "callsense_analysis_report.pdf"
 
 app = FastAPI(title="CallSense AI API", version="1.0.0", description="Synthetic customer-call analytics demo API")
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"], expose_headers=["Content-Disposition"])
@@ -147,6 +153,62 @@ def analyze_text(text: str) -> Analysis:
 def public_call(call):
     return {k:v for k,v in call.items() if k != 'expected_scenario'}
 
+def real_audio_call():
+    """Expose the local pipeline artifacts as a separate, non-synthetic call."""
+    if not all(path.is_file() for path in (TRANSCRIPT_FILE, SENTIMENT_FILE, REAL_AUDIO_FILE, REAL_REPORT_FILE)):
+        return None
+    try:
+        transcript_data = json.loads(TRANSCRIPT_FILE.read_text(encoding='utf-8'))
+        sentiment_data = json.loads(SENTIMENT_FILE.read_text(encoding='utf-8'))
+        segments = transcript_data.get('segments') or []
+        sentiment_segments = sentiment_data.get('segments') or []
+        summary = sentiment_data.get('summary') or {}
+    except (OSError, json.JSONDecodeError):
+        return None
+    transcript = ' '.join(str(segment.get('text', '')).strip() for segment in segments if segment.get('text'))
+    total = int(summary.get('total_segments') or len(sentiment_segments))
+    positive = int(summary.get('positive_segments') or 0)
+    negative = int(summary.get('negative_segments') or 0)
+    if not transcript or not total:
+        return None
+    # The existing SST-2 pipeline labels each segment as positive or negative.
+    # Use the segment majority for a call-level label and preserve its measured shares.
+    label = 'Positive' if positive > negative else 'Negative' if negative > positive else 'Neutral'
+    scores = {
+        'Positive': positive / total,
+        'Negative': negative / total,
+    }
+    duration = transcript_data.get('duration_seconds')
+    minutes, seconds = divmod(int(duration or 0), 60)
+    analysis = {
+        'sentiment': label,
+        'sentiment_scores': scores,
+        'purchase_probability': None,
+        'confidence_note': 'Positive and negative shares are the proportions of transcript segments classified by DistilBERT SST-2. The model is binary and has no native neutral class; the call label is the segment majority.',
+        'key_insights': [],
+        'behavioral_signals': [],
+        'recommended_action': '',
+        'analyzed_at': transcript_data.get('processed_at', ''),
+        'analysis_method': sentiment_data.get('sentiment_model', 'DistilBERT SST-2') + ' (segment classifications; majority call label)',
+        'sentiment_model': sentiment_data.get('sentiment_model', ''),
+        'sentiment_segment_summary': summary,
+        'sentiment_segments': sentiment_segments,
+    }
+    return {
+        'id': REAL_AUDIO_ID,
+        'customer': 'Rahul',
+        'title': 'Smartflow productivity software call',
+        'date': '',
+        'duration': f'{minutes:02d}:{seconds:02d}',
+        'duration_seconds': duration,
+        'channel': 'Recorded call',
+        'transcript': transcript,
+        'audio': REAL_AUDIO_FILE.name,
+        'is_synthetic_demo': False,
+        'sentiment_model': sentiment_data.get('sentiment_model', ''),
+        'analysis': analysis,
+    }
+
 @app.get('/')
 def root(): return {'name':'CallSense AI API','version':'1.0.0','docs':'/docs','status':'ok'}
 @app.get('/api/health')
@@ -157,14 +219,24 @@ def list_calls():
     for call in CALLS:
         a=analyze_text(call['transcript'])
         items.append({**public_call(call), 'analysis':a.model_dump()})
+    real_call = real_audio_call()
+    if real_call:
+        items.append(real_call)
     return {'calls':items,'count':len(items),'demo_data':True}
 @app.get('/api/calls/{call_id}')
 def call_detail(call_id: str):
+    if call_id == REAL_AUDIO_ID:
+        call = real_audio_call()
+        if not call: raise HTTPException(404, 'Real recording artifacts are unavailable')
+        return call
     call=next((c for c in CALLS if c['id']==call_id),None)
     if not call: raise HTTPException(404,'Call not found')
     return {**public_call(call),'analysis':analyze_text(call['transcript']).model_dump(),'demo_data':True}
 @app.get('/api/calls/{call_id}/audio')
 def call_audio(call_id: str):
+    if call_id == REAL_AUDIO_ID:
+        if not REAL_AUDIO_FILE.is_file(): raise HTTPException(404, 'Real recording not found')
+        return FileResponse(REAL_AUDIO_FILE, media_type='audio/mp4', filename=REAL_AUDIO_FILE.name)
     call=next((c for c in CALLS if c['id']==call_id),None)
     if not call: raise HTTPException(404,'Call not found')
     path=MEDIA/call['audio']
@@ -173,6 +245,9 @@ def call_audio(call_id: str):
 
 @app.get('/api/calls/{call_id}/report')
 def download_report(call_id: str):
+    if call_id == REAL_AUDIO_ID:
+        if not REAL_REPORT_FILE.is_file(): raise HTTPException(404, 'Real recording report not found')
+        return FileResponse(REAL_REPORT_FILE, media_type='application/pdf', filename=REAL_REPORT_FILE.name)
     call=next((c for c in CALLS if c['id']==call_id),None)
     if not call: raise HTTPException(404,'Call not found')
     analysis=analyze_text(call['transcript'])
